@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+    <h1 class="text-center">New Recipe</h1>
+    <form id="recipeform" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{formset.management_form}}
+        <div class="row">
+            <div class="col">
+                <h2 class="text-center">About</h2>
+                {{ form.title | as_crispy_field }}
+                {{ form.category | as_crispy_field }}
+                {{ form.description | as_crispy_field }}
+                {{ form.servings | as_crispy_field }}
+                
+                <div class="row">
+                    <div class="col">
+                        <label for="{{form.prep_time_hr.id_for_label}}">Prep Time</label>
+                    </div>
+                    <div class="col">
+                        <label for="{{form.prep_time_hr.id_for_label}}">Cook Time</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div></div>
+                    </div>
+                    <div class="col">
+                        <div></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="d-flex">
+                            <div class="d-inline-block"> {{ form.prep_time_hr | as_crispy_field }} </div>
+                            <div class="d-inline-block"> <h3>&nbsp;:&nbsp;</h3></div>
+                            <div class="d-inline-block"> {{ form.prep_time_min | as_crispy_field }} </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex">
+                            <div class="d-inline-block"> {{ form.cook_time_hr | as_crispy_field }} </div>
+                            <div class="d-inline-block"> <h3>&nbsp;:&nbsp;</h3></div>
+                            <div class="d-inline-block"> {{ form.cook_time_min | as_crispy_field }} </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    {{ form.image | as_crispy_field }}
+                </div>
+            </div>
+
+            <div id="form-container" class="col">
+                <h2 class="text-center">Ingredients & Directions</h2>
+                {{ form.directions | as_crispy_field }}
+                <div class="form-row">
+                    <div class="col-6">
+                        Ingredient
+                    </div>
+                    <div class="col-2">
+                        Quantity                       
+                    </div>
+                    <div class="col-3">
+                        Measurement
+                    </div>      
+                </div>
+                    {% for form in formset %}
+                    <div class="ingredient-form form-row">
+                        <div class="col-6">
+                            {{ form.ingredient | as_crispy_field}}
+                        </div>
+                        <div class="col-2">
+                            {{ form.quantity | as_crispy_field}}
+                        </div>
+                        <div class="col-3">
+                            {{ form.measurement | as_crispy_field}}
+                        </div> 
+                        <div class="col-1">
+                            <button class="btn-secondary btn" id="add-form" type="button" onclick="addForm();">+</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                <div id="add-ingredient">
+                    <button class="btn-primary btn float-right" type="submit">Submit</button>
+                </div>
+            </div>           
+        </div>
+    </form>
+    
+<script>
+    
+    let ingredientForm = document.querySelectorAll(".ingredient-form")
+    let container = document.querySelector("#form-container")
+    let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
+    let sumbitDiv = document.querySelector("#add-ingredient")
+    
+    let formNum = ingredientForm.length-1
+
+    function addForm(){
+        let newForm = ingredientForm[0].cloneNode(true)
+        let formRegex = RegExp(`form-(\\d){1}-`,'g')
+
+        formNum++
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`)
+        newForm.innerHTML = newForm.innerHTML.replace(/value\s*=\s*(['"])?(.*?)\1/gi, '')
+
+        container.insertBefore(newForm, sumbitDiv)
+
+        totalForms.setAttribute('value', `${formNum+1}`)
+    }
+</script>
+<!--
+<script>
+    document.getElementById("recipeform").addEventListener("submit", function() {
+        window.onbeforeunload = null;
+    });
+    window.onbeforeunload = function() {
+        return "";
+    };
+</script>
+-->
+{% endblock %}

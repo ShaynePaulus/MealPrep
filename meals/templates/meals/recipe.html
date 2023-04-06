@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+{% if delete %}
+<h2>Delete Recipe? </h2>
+<form method="POST">
+    {% csrf_token %}
+    <button class="btn-primary btn" type="submit">Delete</button>
+    <a href="{% url 'meals:recipe-view' recipe.id %}" class="btn btn-primary">Cancel</a>
+</form>
+
+{% endif %}
+{% if recipe %}
+    <h1 class="text-center">
+        {{ recipe.title }}
+    </h1>
+    <p class="text-center">{{ recipe.category }}</p>
+    <hr>
+    <div class="row">
+        <div class="col">
+            <p>{{ recipe.description }}</p>
+            {% if ingredients %}
+                <h2>Ingredients</h2>
+                {% for ingredient in ingredients %}
+                    <ul>
+                        <li>{{ingredient.quantity.quantity}} {{ingredient.measurement.measurement}} - {{ingredient.ingredient.ingredient}}</li>
+                    </ul>  
+                {% endfor %}
+            {% endif %}
+            <h2>Directions</h2>
+            <div>{{recipe.directions}}</div>
+        </div>
+        <div class="col">
+            {% if recipe.image%}
+                    <img src="{{recipe.image.url}}" class="img-fluid" >
+            {% endif %}
+            {% if recipe.image_url%}
+            <img src="{{recipe.image_url}}" class="img-fluid" >
+            {% endif %}
+            
+
+            <div class="row">
+                
+
+                    <div class="col">
+                        
+                        <p>Prep Time: {{ recipe.prep_time_hr | default:"0"}} : {{ recipe.prep_time_min | default:"00" }} </p>
+                        
+                    </div>
+                
+                <div class="col">
+                    <p>Cook Time {{ recipe.cook_time_hr | default:"0"}} : {{ recipe.cook_time_min | default:"00" }} </p></p>
+                
+                </div>
+
+            </div>
+            <div class="float-right">
+                <a href="{% url 'meals:recipe-update' recipe.id %}" class="btn btn-primary">Edit</a>
+                <a href="{% url 'meals:recipe-delete' recipe.id %}" class="btn btn-primary">Delete</a>
+            </div>
+            
+        </div>
+    </div>
+{% else %}
+    <p>No recipe with that id</p>
+{% endif %}
+
+    
+
+    
+{% endblock %}
